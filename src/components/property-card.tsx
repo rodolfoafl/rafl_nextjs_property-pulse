@@ -3,47 +3,9 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-export interface Location {
-  street: string
-  city: string
-  state: string
-  zipcode: string
-}
+import { Property } from '@/data/types/property'
 
-export interface Rates {
-  weekly?: number
-  monthly?: number
-  nightly?: number
-}
-
-export interface SellerInfo {
-  name: string
-  email: string
-  phone: string
-}
-
-export interface PropertyCardProps {
-  property: {
-    _id: string
-    owner: string
-    name: string
-    type: string
-    description: string
-    location: Location
-    beds: number
-    baths: number
-    square_feet: number
-    amenities: string[]
-    rates: Rates
-    seller_info: SellerInfo
-    images: string[]
-    is_featured: boolean
-    createdAt: string
-    updatedAt: string
-  }
-}
-
-export default function PropertyCard({ property }: PropertyCardProps) {
+export default function PropertyCard({ property }: { property: Property }) {
   function getRateDisplay(): string | undefined {
     const { rates } = property
 

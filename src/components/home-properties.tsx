@@ -1,13 +1,21 @@
 import Link from 'next/link'
 
-import properties from '@/assets/properties.json'
+import { api } from '@/data/api'
+import { Property } from '@/data/types/property'
 
 import PropertyCard from './property-card'
 
-export default function HomeProperties() {
-  const recentProperties = properties
-    .sort(() => Math.random() - Math.random())
-    .slice(0, 3)
+async function getRecentProperties(): Promise<Property[]> {
+  const response = await api('/properties/recent', {
+    next: { revalidate: 60 * 60 },
+  })
+
+  const properties = await response.json()
+  return properties
+}
+
+export default async function HomeProperties() {
+  const recentProperties = await getRecentProperties()
 
   return (
     <>

@@ -1,7 +1,19 @@
-import properties from '@/assets/properties.json'
 import PropertyCard from '@/components/property-card'
+import { api } from '@/data/api'
+import { Property } from '@/data/types/property'
 
-export default function PropertiesPage() {
+async function getProperties(): Promise<Property[]> {
+  const response = await api('/properties', {
+    next: { revalidate: 60 * 60 },
+  })
+
+  const properties = await response.json()
+  return properties
+}
+
+export default async function PropertiesPage() {
+  const properties = await getProperties()
+
   return (
     <section className="px-4 py-6">
       <div className="container-xl m-auto px-4 py-6 lg:container">
