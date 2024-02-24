@@ -78,7 +78,7 @@ export default function PropertyCard({ property }: { property: Property }) {
 
         {/* <div className="mb-5 border border-gray-100"></div> */}
 
-        <div className="mb-4 mt-5 flex flex-col justify-between lg:flex-row">
+        <div className="mb-4 flex flex-col justify-between border-t border-zinc-300 pt-5 lg:flex-row">
           <div className="mb-4 flex items-center gap-2 lg:mb-0">
             <MapPin size={20} className="text-orange-700" />
             <span className="text-orange-700">

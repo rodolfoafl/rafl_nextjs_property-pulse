@@ -1,9 +1,13 @@
 import connectDB from 'config/database'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-import Property from '../../(models)/Property'
+import Property from '../../../../data/models/Property'
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  if (request.method !== 'GET') {
+    return NextResponse.json({ message: 'Method not allowed' }, { status: 405 })
+  }
+
   try {
     await connectDB()
 

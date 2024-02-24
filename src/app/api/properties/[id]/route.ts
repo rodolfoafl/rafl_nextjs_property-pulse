@@ -1,9 +1,12 @@
 import connectDB from 'config/database'
 import { NextRequest, NextResponse } from 'next/server'
 
-import Property from '../../../data/models/Property'
+import Property from '../../../../data/models/Property'
 
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
   if (request.method !== 'GET') {
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 })
   }
@@ -11,9 +14,14 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB()
 
-    const properties = await Property.find({}).sort({ createdAt: 'desc' })
+    const { id } = params
+    const property = await Property.findById(id)
 
-    return new NextResponse(JSON.stringify(properties), {
+    if (!property) {
+      return new NextResponse('Property not found', { status: 404 })
+    }
+
+    return new NextResponse(JSON.stringify(property), {
       status: 200,
     })
   } catch (error) {
