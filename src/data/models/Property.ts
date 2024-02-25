@@ -1,7 +1,5 @@
 import { model, models, Schema } from 'mongoose'
 
-console.log(models)
-
 const PropertySchema = new Schema(
   {
     owner: {

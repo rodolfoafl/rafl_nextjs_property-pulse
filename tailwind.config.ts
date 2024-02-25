@@ -9,7 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Poppins', 'sans-serif'],
+      },
+      gridTemplateColumns: {
+        '70/30': '69% 29%',
       },
     },
   },
