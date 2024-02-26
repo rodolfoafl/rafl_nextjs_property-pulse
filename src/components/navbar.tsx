@@ -4,7 +4,16 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { Bell, LogIn, Menu } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useState } from 'react'
+import { BuiltInProviderType } from 'next-auth/providers/index'
+import {
+  ClientSafeProvider,
+  getProviders,
+  LiteralUnion,
+  signIn,
+  signOut,
+  useSession,
+} from 'next-auth/react'
+import { useEffect, useState } from 'react'
 
 import logo from '@/assets/images/logo-white.png'
 import profileDefault from '@/assets/images/profile.png'
@@ -12,8 +21,32 @@ import profileDefault from '@/assets/images/profile.png'
 import NavLink from './nav-link'
 
 export default function Navbar() {
+  const session = useSession()
+  const isSignedIn = session.status === 'authenticated'
+  const profileImage = session.data?.user?.image
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isUserAuthenticated, _] = useState(false)
+  const [providers, setProviders] = useState<Record<
+    LiteralUnion<BuiltInProviderType, string>,
+    ClientSafeProvider
+  > | null>()
+
+  const handleSignIn = async (provider: string) => {
+    await signIn(provider)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+  }
+
+  useEffect(() => {
+    const getAuthProviders = async () => {
+      const res = await getProviders()
+      setProviders(res)
+    }
+
+    getAuthProviders()
+  }, [])
 
   return (
     <nav className="border-b border-blue-500 bg-blue-700">
@@ -51,25 +84,36 @@ export default function Navbar() {
               <div className="flex space-x-2">
                 <NavLink href={'/'}>Home</NavLink>
                 <NavLink href={'/properties'}>Properties</NavLink>
-                {isUserAuthenticated && (
+                {isSignedIn && (
                   <NavLink href={'/properties/add'}>Add Property</NavLink>
                 )}
               </div>
             </div>
           </div>
 
-          {!isUserAuthenticated && (
+          {!isSignedIn && (
             <div className="block md:ml-6">
               <div className="flex items-center">
-                <button className="flex items-center rounded-md bg-gray-700 px-3 py-2 text-white hover:bg-gray-900 hover:text-white">
-                  <LogIn className="text-white md:mr-2" />
-                  <span className="hidden md:flex">Login or Register</span>
-                </button>
+                {providers &&
+                  Object.values(providers).map((provider) => {
+                    return (
+                      <button
+                        onClick={() => handleSignIn(provider.id)}
+                        key={provider.id}
+                        className="flex items-center rounded-md bg-gray-700 px-3 py-2 text-white hover:bg-gray-900 hover:text-white"
+                      >
+                        <LogIn className="text-white md:mr-2" />
+                        <span className="hidden md:flex">
+                          Login or Register
+                        </span>
+                      </button>
+                    )
+                  })}
               </div>
             </div>
           )}
 
-          {isUserAuthenticated && (
+          {isSignedIn && (
             <div className="absolute inset-y-0 right-0 flex items-center pr-2 md:static md:inset-auto md:ml-6 md:pr-0">
               <Link href="/messages" className="group relative">
                 <button
@@ -99,7 +143,9 @@ export default function Navbar() {
                       <span className="sr-only">Open user menu</span>
                       <Image
                         className="h-8 w-8 rounded-full"
-                        src={profileDefault}
+                        src={profileImage || profileDefault}
+                        width={40}
+                        height={40}
                         alt=""
                       />
                     </button>
@@ -140,6 +186,7 @@ export default function Navbar() {
                       </DropdownMenu.Item>
                       <DropdownMenu.Item>
                         <button
+                          onClick={handleSignOut}
                           className="block px-4 py-2 text-sm text-gray-700"
                           role="menuitem"
                           tabIndex={-1}
@@ -162,7 +209,7 @@ export default function Navbar() {
           <div className="w-full space-y-1 px-2 pb-3 pt-2">
             <NavLink href={'/'}>Home</NavLink>
             <NavLink href={'/properties'}>Properties</NavLink>
-            {isUserAuthenticated && (
+            {isSignedIn && (
               <NavLink href={'/properties/add'}>Add Property</NavLink>
             )}
           </div>

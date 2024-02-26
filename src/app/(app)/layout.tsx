@@ -1,3 +1,4 @@
+import AuthProvider from '@/components/auth-provider'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
 
@@ -7,11 +8,13 @@ export default function StoreLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen w-full">
-      <Navbar />
-      <main>{children}</main>
+    <AuthProvider>
+      <div className="min-h-screen w-full">
+        <Navbar />
+        <main>{children}</main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </AuthProvider>
   )
 }
