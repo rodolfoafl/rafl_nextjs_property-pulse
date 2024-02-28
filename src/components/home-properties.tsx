@@ -7,7 +7,8 @@ import PropertyCard from './property-card'
 
 async function getRecentProperties(): Promise<Property[]> {
   const response = await api('/properties/recent', {
-    next: { revalidate: 60 * 60 },
+    // next: { revalidate: 60 * 60 },
+    cache: 'no-store',
   })
 
   const properties = await response.json()

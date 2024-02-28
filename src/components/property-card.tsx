@@ -40,7 +40,11 @@ export default function PropertyCard({ property }: { property: Property }) {
         quality={100}
         width={400}
         height={225}
-        src={'/images/' + property.images[0]}
+        src={
+          property.images[0].includes('https')
+            ? property.images[0]
+            : '/images/' + property.images[0]
+        }
         alt=""
         className="h-auto w-full rounded-t-xl"
       />

@@ -4,7 +4,8 @@ import { Property } from '@/data/types/property'
 
 async function getProperties(): Promise<Property[]> {
   const response = await api('/properties', {
-    next: { revalidate: 60 * 60 },
+    // next: { revalidate: 60 * 60 },
+    cache: 'no-store',
   })
 
   const properties = await response.json()

@@ -9,6 +9,10 @@ export default async function connectDB() {
     return console.log('MongoDB already connected')
   }
 
+  if (!process.env.MONGODB_ACCESS_URI) {
+    throw new Error('MONGODB_ACCESS_URI is not defined')
+  }
+
   try {
     await mongoose.connect(process.env.MONGODB_ACCESS_URI)
     connected = true

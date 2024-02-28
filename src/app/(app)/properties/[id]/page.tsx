@@ -60,7 +60,7 @@ export default async function PropertyPage({ params }: PropertyProps) {
 
       <section className="bg-blue-50">
         <div className="container m-auto px-6 py-10">
-          <div className="md:grid-cols-70/30 grid w-full grid-cols-1 gap-6">
+          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-70/30">
             <PropertyDetails property={property} />
 
             <aside className="space-y-4">
