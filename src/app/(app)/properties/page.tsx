@@ -16,7 +16,7 @@ export default async function PropertiesPage() {
   const properties = await getProperties()
 
   return (
-    <section className="px-4 py-6">
+    <section className="bg-blue-50 px-4 py-6">
       <div className="container-xl m-auto px-4 py-6 lg:container">
         {!properties || properties.length === 0 ? (
           <p>No properties found</p>

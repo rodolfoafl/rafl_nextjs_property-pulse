@@ -35,11 +35,12 @@ export default function PropertyCard({ property }: { property: Property }) {
   }
 
   return (
-    <div className="relative rounded-xl shadow-md">
+    <div className="relative rounded-xl bg-white shadow-md">
       <Image
-        quality={100}
-        width={400}
-        height={225}
+        priority={true}
+        quality={60}
+        width={640}
+        height={360}
         src={
           property.images[0].includes('https')
             ? property.images[0]

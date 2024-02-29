@@ -1,4 +1,4 @@
-import AuthProvider from '@/components/auth-provider'
+import { NextAuthProvider } from '@/components/auth-provider'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
 
@@ -8,13 +8,13 @@ export default function StoreLayout({
   children: React.ReactNode
 }) {
   return (
-    <AuthProvider>
+    <NextAuthProvider>
       <div className="min-h-screen w-full">
         <Navbar />
-        <main>{children}</main>
+        <main className="min-h-screen bg-blue-50">{children}</main>
 
         <Footer />
       </div>
-    </AuthProvider>
+    </NextAuthProvider>
   )
 }

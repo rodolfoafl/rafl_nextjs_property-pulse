@@ -12,7 +12,7 @@ export default function PropertyHeaderImage({
       <div className="container-xl m-auto">
         <div className="grid grid-cols-1">
           <Image
-            src={`/images/${image}`}
+            src={image.includes('https') ? image : `/images/${image}`}
             alt=""
             className="h-[400px] w-full object-cover"
             width={1280}

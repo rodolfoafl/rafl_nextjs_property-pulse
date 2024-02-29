@@ -1,5 +1,5 @@
 import connectDB from 'config/database'
-import { NextAuthOptions } from 'next-auth'
+import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider, { GoogleProfile } from 'next-auth/providers/google'
 
 import User from '@/data/models/Users'
@@ -16,22 +16,38 @@ export const authOptions: NextAuthOptions = {
           response_type: 'code',
         },
       },
+      profile(profile: GoogleProfile) {
+        return {
+          id: profile.sub,
+          name: profile.name,
+          username: '',
+          email: profile.email,
+          avatar_url: profile.picture,
+        }
+      },
     }),
   ],
   callbacks: {
-    async signIn({ profile }: GoogleProfile) {
+    async signIn({ profile }) {
+      console.log('profile', profile)
+      if (!profile) {
+        throw new Error('No session or user found')
+      }
+
       await connectDB()
 
       const existingUser = await User.findOne({ email: profile.email })
       if (!existingUser) {
-        const username = profile.name.slice(0, 20)
+        const username = profile.name?.slice(0, 20)
 
         await User.create({
           email: profile.email,
           username,
-          image: profile.picture,
+          image: profile.image || '',
         })
       }
+
+      console.log('existingUser::', existingUser)
       return true
     },
     async session({ session }) {
@@ -41,12 +57,10 @@ export const authOptions: NextAuthOptions = {
         throw new Error('No session or user found')
       }
 
-      session.user = {
-        ...session.user,
-        id: user?._id,
+      return {
+        ...session,
+        user,
       }
-
-      return session
     },
   },
 }

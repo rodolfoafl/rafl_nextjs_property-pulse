@@ -4,6 +4,7 @@ import Link from 'next/link'
 
 import PropertyDetails from '@/components/property-details'
 import PropertyHeaderImage from '@/components/property-header-image'
+import PropertyImageGallery from '@/components/property-image-gallery'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
 
@@ -49,13 +50,15 @@ export default async function PropertyPage({ params }: PropertyProps) {
     <>
       <PropertyHeaderImage image={property.images[0]} />
 
-      <div className="container m-auto px-6 py-6">
-        <Link
-          href="/properties"
-          className="flex items-center text-blue-500 hover:text-blue-600"
-        >
-          <ArrowLeft className="mr-2" size={20} /> Back to Properties
-        </Link>
+      <div className="w-full bg-white">
+        <div className="container m-auto px-6 py-6">
+          <Link
+            href="/properties"
+            className="flex items-center text-blue-500 hover:text-blue-600"
+          >
+            <ArrowLeft className="mr-2" size={20} /> Back to Properties
+          </Link>
+        </div>
       </div>
 
       <section className="bg-blue-50">
@@ -146,6 +149,10 @@ export default async function PropertyPage({ params }: PropertyProps) {
               </div>
             </aside>
           </div>
+        </div>
+
+        <div className="container m-auto px-6 py-10">
+          <PropertyImageGallery images={property.images} />
         </div>
       </section>
     </>
