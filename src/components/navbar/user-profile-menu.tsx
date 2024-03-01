@@ -3,10 +3,15 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import Image from 'next/image'
 import Link from 'next/link'
+import { signOut } from 'next-auth/react'
 
 import profileDefault from '@/assets/images/profile.png'
 
 export default function UserProfileMenu() {
+  async function handleSignOut() {
+    await signOut()
+  }
+
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
@@ -33,7 +38,7 @@ export default function UserProfileMenu() {
         <DropdownMenu.Content
           sideOffset={12}
           id="user-menu"
-          className="relative right-4 z-10 w-48 origin-top-right rounded-md bg-white 
+          className="relative z-10 mr-12 w-48 origin-top-right rounded-md bg-white 
         shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none"
           role="menu"
           aria-orientation="vertical"
@@ -64,7 +69,7 @@ export default function UserProfileMenu() {
           </DropdownMenu.Item>
           <DropdownMenu.Item>
             <button
-              // onClick={handleSignOut}
+              onClick={handleSignOut}
               className="block px-4 py-2 text-sm text-gray-700"
               role="menuitem"
               tabIndex={-1}

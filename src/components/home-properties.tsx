@@ -37,7 +37,7 @@ export default async function HomeProperties() {
         </div>
       </section>
 
-      <section className="m-auto my-10 max-w-lg px-6">
+      <section className="m-auto max-w-lg px-6 py-10">
         <Link
           href="/properties"
           className="block rounded-xl bg-black px-6 py-4 text-center text-white hover:bg-gray-700"
