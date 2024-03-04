@@ -22,44 +22,47 @@ export const authOptions: NextAuthOptions = {
           name: profile.name,
           username: '',
           email: profile.email,
-          avatar_url: profile.picture,
+          image: profile.picture,
         }
       },
     }),
   ],
   callbacks: {
     async signIn({ profile }) {
-      console.log('profile', profile)
       if (!profile) {
         throw new Error('No session or user found')
       }
 
+      const gProfile = profile as GoogleProfile
+
       await connectDB()
 
-      const existingUser = await User.findOne({ email: profile.email })
+      const existingUser = await User.findOne({ email: gProfile.email })
       if (!existingUser) {
-        const username = profile.name?.slice(0, 20)
+        const username = gProfile.name?.slice(0, 20)
 
         await User.create({
-          email: profile.email,
+          email: gProfile.email,
           username,
-          image: profile.image || '',
+          image: gProfile.picture,
         })
       }
 
-      console.log('existingUser::', existingUser)
       return true
     },
     async session({ session }) {
       const user = await User.findOne({ email: session.user?.email })
 
-      if (!session || !session.user) {
+      if (!session || !user) {
         throw new Error('No session or user found')
       }
 
       return {
         ...session,
-        user,
+        user: {
+          ...session.user,
+          id: user.get('_id').toString(),
+        },
       }
     },
   },

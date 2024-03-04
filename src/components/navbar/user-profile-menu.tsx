@@ -3,12 +3,23 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import Image from 'next/image'
 import Link from 'next/link'
-import { signOut } from 'next-auth/react'
+import { DefaultUser } from 'next-auth'
+import { signOut, useSession } from 'next-auth/react'
 
 import profileDefault from '@/assets/images/profile.png'
 
 export default function UserProfileMenu() {
-  async function handleSignOut() {
+  const { data: session } = useSession()
+
+  if (!session) return null
+
+  const user = session?.user as DefaultUser
+  const profileImage = user?.image
+
+  async function handleSignOut(
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) {
+    e.preventDefault()
     await signOut()
   }
 
@@ -26,7 +37,7 @@ export default function UserProfileMenu() {
           <span className="sr-only">Open user menu</span>
           <Image
             className="h-8 w-8 rounded-full"
-            src={profileDefault}
+            src={profileImage ?? profileDefault}
             width={40}
             height={40}
             alt=""

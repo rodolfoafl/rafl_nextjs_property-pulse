@@ -1,20 +1,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getServerSession } from 'next-auth'
+import { DefaultUser, getServerSession } from 'next-auth'
 
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
+import { authOptions } from '@/lib/auth'
 
 import DeletePropertyButton from './delete-property-button'
 
-// interface UserPropertyListingProps {
-//   userId: string
-// }
-
 async function getProperties(userId: string): Promise<Property[]> {
   const response = await api(`/properties/user/${userId}`, {
-    next: { revalidate: 60 * 60 },
-    // cache: 'no-store',
+    cache: 'no-store',
   })
 
   const properties = await response.json()
@@ -22,15 +18,16 @@ async function getProperties(userId: string): Promise<Property[]> {
 }
 
 export default async function UserPropertyListing() {
-  const session = await getServerSession()
-  console.log('serverSession:', session)
+  const session = await getServerSession(authOptions)
   if (!session) {
     return null
   }
 
-  const user = session.user
+  const user = session.user as DefaultUser
+  console.log('expect (65e60607d1fbceb3b30370d2)', user.id)
 
-  const properties = await getProperties(user?.id)
+  const properties = await getProperties(user.id)
+  console.log(properties)
 
   if (!properties || properties.length === 0) {
     return <p>No properties found</p>

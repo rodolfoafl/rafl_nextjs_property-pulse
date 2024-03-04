@@ -2,6 +2,7 @@ import connectDB from 'config/database'
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 
+import { authOptions } from '@/lib/auth'
 import cloudinary from '@/lib/cloudinary'
 
 import Property from '../../../data/models/Property'
@@ -26,15 +27,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return new NextResponse('Unauthorized: session is required', {
+      status: 401,
+    })
+  }
+
   try {
     await connectDB()
-
-    const session = await getServerSession()
-    if (!session) {
-      return new NextResponse('Unauthorized: session is required', {
-        status: 401,
-      })
-    }
 
     const user:
       | {

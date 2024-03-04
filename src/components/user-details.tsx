@@ -9,8 +9,9 @@ import defaultProfileImage from '@/assets/images/profile.png'
 export default function UserDetails() {
   const { data: session } = useSession()
 
-  if (!session) return null
-  console.log('clientsession:', session)
+  if (!session) {
+    return null
+  }
 
   const user = session?.user as DefaultUser
   const profileImage = user?.image
