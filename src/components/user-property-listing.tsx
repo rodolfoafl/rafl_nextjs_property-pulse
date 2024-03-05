@@ -10,7 +10,7 @@ import DeletePropertyButton from './delete-property-button'
 
 async function getProperties(userId: string): Promise<Property[]> {
   const response = await api(`/properties/user/${userId}`, {
-    cache: 'no-store',
+    next: { tags: ['properties'] },
   })
 
   const properties = await response.json()
@@ -24,10 +24,8 @@ export default async function UserPropertyListing() {
   }
 
   const user = session.user as DefaultUser
-  console.log('expect (65e60607d1fbceb3b30370d2)', user.id)
 
   const properties = await getProperties(user.id)
-  console.log(properties)
 
   if (!properties || properties.length === 0) {
     return <p>No properties found</p>

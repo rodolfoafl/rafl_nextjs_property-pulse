@@ -1,3 +1,5 @@
+import { Toaster } from 'sonner'
+
 import { NextAuthProvider } from '@/components/auth-provider'
 import Footer from '@/components/footer'
 import Navbar from '@/components/navbar'
@@ -14,6 +16,8 @@ export default function StoreLayout({
         <main className="min-h-screen bg-blue-50">{children}</main>
 
         <Footer />
+
+        <Toaster richColors />
       </div>
     </NextAuthProvider>
   )

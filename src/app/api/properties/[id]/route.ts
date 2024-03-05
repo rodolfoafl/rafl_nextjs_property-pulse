@@ -2,6 +2,7 @@ import connectDB from 'config/database'
 import { NextRequest, NextResponse } from 'next/server'
 import { DefaultUser, getServerSession } from 'next-auth'
 
+import { authOptions } from '@/lib/auth'
 import cloudinary from '@/lib/cloudinary'
 
 import Property from '../../../../data/models/Property'
@@ -14,7 +15,7 @@ export async function DELETE(
     return NextResponse.json({ message: 'Method not allowed' }, { status: 405 })
   }
 
-  const session = await getServerSession()
+  const session = await getServerSession(authOptions)
   if (!session || !session.user) {
     return new NextResponse('Unauthorized: session is required', {
       status: 401,
