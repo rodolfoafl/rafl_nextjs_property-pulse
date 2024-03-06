@@ -1,6 +1,6 @@
-import MainMenu from './navbar/main-menu'
-import ActionsMenu from './navbar/menu'
-import ProvidersLogin from './navbar/providers-login'
+import MainMenu from './main-menu'
+import ActionsMenu from './menu'
+import ProvidersLogin from './providers-login'
 
 export default function Navbar() {
   return (

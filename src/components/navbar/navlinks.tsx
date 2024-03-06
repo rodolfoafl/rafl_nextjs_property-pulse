@@ -1,6 +1,6 @@
 import { useSession } from 'next-auth/react'
 
-import NavLink from '../nav-link'
+import NavLink from './nav-link'
 
 interface NavLinksProps {
   isMobileMenuOpen: boolean

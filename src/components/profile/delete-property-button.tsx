@@ -4,7 +4,7 @@ import * as AlertDialog from '@radix-ui/react-alert-dialog'
 import { toast } from 'sonner'
 
 import { api } from '@/data/api'
-import action from '@/utils/revalidate-properties-tag'
+import revalidatePropertiesAction from '@/utils/revalidate-properties-tag'
 
 interface DeletePropertyButtonProps {
   propertyId: string
@@ -20,7 +20,7 @@ export default function DeletePropertyButton({
       })
 
       if (res.status === 200) {
-        action()
+        revalidatePropertiesAction()
         return toast.success('Property was deleted')
       }
       return toast.error('Failed to delete the Property')

@@ -1,4 +1,4 @@
-import PropertyCard from '@/components/property-card'
+import PropertyCard from '@/components/property/property-card'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
 

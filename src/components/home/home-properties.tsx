@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
 
-import PropertyCard from './property-card'
+import PropertyCard from '../property/property-card'
 
 async function getRecentProperties(): Promise<Property[]> {
   const response = await api('/properties/recent', {

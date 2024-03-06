@@ -3,22 +3,29 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 import { z } from 'zod'
 
 import { api } from '@/data/api'
+import { Property } from '@/data/types/property'
+import revalidateGetPropertyAction from '@/utils/revalidate-property-tag'
 
-const newPropertySchema = z.object({
-  type: z
-    .enum([
-      'Apartment',
-      'Condo',
-      'House',
-      'Cabin Or Cottage',
-      'Room',
-      'Studio',
-      'Other',
-    ])
-    .default('Apartment'),
+interface PropertyDetailsProps {
+  property: Property
+}
+
+const propertyTypes = z.enum([
+  'Apartment',
+  'Condo',
+  'House',
+  'Cabin Or Cottage',
+  'Room',
+  'Studio',
+  'Other',
+])
+
+const updatePropertySchema = z.object({
+  type: propertyTypes,
   name: z.string().min(1, { message: 'Name is required' }),
   description: z
     .string()
@@ -43,26 +50,58 @@ const newPropertySchema = z.object({
     email: z.string().email().min(1, { message: 'Selle Email is required' }),
     phone: z.string().min(1, { message: 'Seller Phone is required' }),
   }),
-  images: z.custom<File[]>().refine((images) => images.length > 0, {
-    message: 'At least one image is required',
-  }),
 })
 
-type NewPropertySchema = z.infer<typeof newPropertySchema>
+type UpdatePropertySchema = z.infer<typeof updatePropertySchema>
 
-export default function AddPropertyForm() {
+export default function EditPropertyForm({ property }: PropertyDetailsProps) {
+  const router = useRouter()
+
   const {
     control,
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm<NewPropertySchema>({
-    resolver: zodResolver(newPropertySchema),
+  } = useForm<UpdatePropertySchema>({
+    resolver: zodResolver(updatePropertySchema),
+    values: {
+      type: propertyTypes.parse(property.type),
+      name: property.name,
+      description: property.description,
+      location: {
+        street: property.location.street,
+        city: property.location.city,
+        state: property.location.state,
+        zipcode: property.location.zipcode,
+      },
+      beds: property.beds,
+      baths: property.baths,
+      square_feet: property.square_feet,
+      amenities: property.amenities.map((amenity) => amenity.trim()),
+      rates: {
+        weekly: property.rates.weekly ?? 0,
+        monthly: property.rates.monthly ?? 0,
+        nightly: property.rates.nightly ?? 0,
+      },
+      seller_info: {
+        name: property.seller_info.name,
+        email: property.seller_info.email,
+        phone: property.seller_info.phone,
+      },
+    },
   })
 
-  const router = useRouter()
-
-  const handleCreateNewProperty = async (data: NewPropertySchema) => {
+  const handleUpdateProperty = async (data: UpdatePropertySchema) => {
+    const updatedRates: { [key: string]: number | undefined } = {
+      ...data.rates,
+    }
+    if (updatedRates) {
+      for (const rate in updatedRates) {
+        if (updatedRates[rate] === 0) {
+          delete updatedRates[rate]
+        }
+      }
+    }
     const formData = new FormData()
     formData.append('type', data.type)
     formData.append('name', data.name)
@@ -75,31 +114,31 @@ export default function AddPropertyForm() {
     formData.append('baths', data.baths.toString())
     formData.append('square_feet', data.square_feet.toString())
     formData.append('amenities', data.amenities?.join(', ') || '')
-    formData.append('rates.weekly', data.rates.weekly?.toString() || '')
-    formData.append('rates.monthly', data.rates.monthly?.toString() || '')
-    formData.append('rates.nightly', data.rates.nightly?.toString() || '')
+    formData.append('rates.weekly', updatedRates.weekly?.toString() || '')
+    formData.append('rates.monthly', updatedRates.monthly?.toString() || '')
+    formData.append('rates.nightly', updatedRates.nightly?.toString() || '')
     formData.append('seller_info.name', data.seller_info.name)
     formData.append('seller_info.email', data.seller_info.email)
     formData.append('seller_info.phone', data.seller_info.phone)
-    for (let i = 0; i < data.images.length; i++) {
-      formData.append('images', data.images[i] as Blob)
-    }
 
-    console.log(formData.getAll('images'))
-
-    await api('/properties', {
-      method: 'POST',
+    await api(`/properties/${property._id}`, {
+      method: 'PUT',
       body: formData,
+    }).then((res) => {
+      if (res.status === 200) {
+        revalidateGetPropertyAction()
+        router.push(`/properties/${property._id}`)
+      } else if (res.status === 401 || res.status === 404) {
+        toast.error('Failed to update Property. Permission denied!')
+      } else {
+        toast.error('Failed to update Property.')
+      }
     })
-      .then((res) => res.json())
-      .then((data) => {
-        router.push(`/properties/${data.propertyId}`)
-      })
   }
 
   return (
-    <form onSubmit={handleSubmit(handleCreateNewProperty)}>
-      <h2 className="mb-6 text-center text-3xl font-semibold">Add Property</h2>
+    <form onSubmit={handleSubmit(handleUpdateProperty)}>
+      <h2 className="mb-6 text-center text-3xl font-semibold">Edit Property</h2>
 
       <div className="mb-4">
         <label htmlFor="type" className="mb-2 block font-bold text-gray-700">
@@ -111,6 +150,7 @@ export default function AddPropertyForm() {
           render={({ field: { name, onChange } }) => {
             return (
               <select
+                defaultValue={property.type}
                 name={name}
                 onChange={onChange}
                 className="w-full rounded border px-3 py-2"
@@ -287,6 +327,7 @@ export default function AddPropertyForm() {
               value="Wifi"
               className="mr-2"
               {...register('amenities')}
+              // defaultChecked={property.amenities.includes('Wifi')}
             />
             <label htmlFor="amenity_wifi">Wifi</label>
           </div>
@@ -540,30 +581,13 @@ export default function AddPropertyForm() {
         )}
       </div>
 
-      <div className="mb-4">
-        <label htmlFor="images" className="mb-2 block font-bold text-gray-700">
-          Images (Select up to 4 images)
-        </label>
-        <input
-          type="file"
-          id="images"
-          className="w-full rounded border px-3 py-2"
-          accept="image/*"
-          multiple
-          {...register('images')}
-        />
-        {errors.images && (
-          <p className="mt-1 text-sm text-red-400">{errors.images.message}</p>
-        )}
-      </div>
-
       <div>
         <button
           disabled={isSubmitting}
           className="focus:shadow-outline w-full rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 focus:outline-none disabled:bg-zinc-300"
           type="submit"
         >
-          Add Property
+          Edit Property
         </button>
       </div>
     </form>

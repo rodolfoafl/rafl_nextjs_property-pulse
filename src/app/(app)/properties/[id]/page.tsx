@@ -2,9 +2,9 @@ import { ArrowLeft, Bookmark, Send, Share2 } from 'lucide-react'
 import { Metadata } from 'next'
 import Link from 'next/link'
 
-import PropertyDetails from '@/components/property-details'
-import PropertyHeaderImage from '@/components/property-header-image'
-import PropertyImageGallery from '@/components/property-image-gallery'
+import PropertyDetails from '@/components/property/property-details'
+import PropertyHeaderImage from '@/components/property/property-header-image'
+import PropertyImageGallery from '@/components/property/property-image-gallery'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
 
@@ -14,9 +14,9 @@ interface PropertyProps {
   }
 }
 
-async function getProperty(id: string): Promise<Property> {
+export async function getProperty(id: string): Promise<Property> {
   const response = await api(`/properties/${id}`, {
-    next: { revalidate: 60 * 60 },
+    next: { tags: ['get-property'] },
   })
 
   const property = await response.json()

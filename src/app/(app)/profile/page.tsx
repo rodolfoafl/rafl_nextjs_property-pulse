@@ -1,5 +1,5 @@
-import UserDetails from '@/components/user-details'
-import UserPropertyListing from '@/components/user-property-listing'
+import UserDetails from '@/components/profile/user-details'
+import UserPropertyListing from '@/components/profile/user-property-listing'
 
 export default function ProfilePage() {
   return (

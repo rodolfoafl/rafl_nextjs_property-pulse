@@ -90,3 +90,89 @@ export async function GET(
     return new NextResponse('Internal Server Error', { status: 500 })
   }
 }
+
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  console.log('PUT', params)
+  const session = await getServerSession(authOptions)
+  if (!session) {
+    return new NextResponse('Unauthorized: session is required', {
+      status: 401,
+    })
+  }
+
+  try {
+    await connectDB()
+
+    const user:
+      | {
+          id?: string
+          name?: string | null | undefined
+          email?: string | null | undefined
+          image?: string | null | undefined
+        }
+      | undefined = session.user
+    if (!user) {
+      return new NextResponse('Unauthorized: user ID is required', {
+        status: 401,
+      })
+    }
+
+    const userId = user.id
+
+    const { id } = params
+    const existingProperty = await Property.findById(id)
+    console.log('edit', id)
+
+    if (!existingProperty) {
+      return new NextResponse('Property does not exist', { status: 404 })
+    }
+
+    if (existingProperty.owner.toString() !== userId) {
+      return new NextResponse('Unauthorized: user is not the property owner', {
+        status: 401,
+      })
+    }
+
+    const formData = await request.formData()
+
+    const amenities = formData.getAll('amenities').toString().split(',')
+
+    const propertyData = {
+      owner: userId,
+      type: formData.get('type'),
+      name: formData.get('name'),
+      description: formData.get('description'),
+      location: {
+        street: formData.get('location.street'),
+        city: formData.get('location.city'),
+        state: formData.get('location.state'),
+        zipcode: formData.get('location.zipcode'),
+      },
+      beds: formData.get('beds'),
+      baths: formData.get('baths'),
+      square_feet: formData.get('square_feet'),
+      amenities,
+      rates: {
+        monthly: formData.get('rates.monthly'),
+        weekly: formData.get('rates.weekly'),
+        nightly: formData.get('rates.nightly'),
+      },
+      seller_info: {
+        name: formData.get('seller_info.name'),
+        email: formData.get('seller_info.email'),
+        phone: formData.get('seller_info.phone'),
+      },
+    }
+
+    const updatedProperty = await Property.findByIdAndUpdate(id, propertyData)
+
+    return new NextResponse(JSON.stringify(updatedProperty), {
+      status: 200,
+    })
+  } catch (error) {
+    return new NextResponse('Failed to add property', { status: 500 })
+  }
+}

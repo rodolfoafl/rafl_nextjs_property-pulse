@@ -1,4 +1,4 @@
-import AddPropertyForm from '@/components/add-property-form'
+import AddPropertyForm from '@/components/property/add-property-form'
 
 export default function PropertyAddPage() {
   return (

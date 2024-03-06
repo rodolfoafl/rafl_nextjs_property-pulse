@@ -1,6 +1,6 @@
-import Hero from '@/components/hero'
-import HomeProperties from '@/components/home-properties'
-import InfoBoxes from '@/components/info-boxes'
+import Hero from '@/components/home/hero'
+import HomeProperties from '@/components/home/home-properties'
+import InfoBoxes from '@/components/home/info-boxes'
 
 export default function Home() {
   return (
