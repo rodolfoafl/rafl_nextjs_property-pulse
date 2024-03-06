@@ -3,6 +3,8 @@ import { Bath, Bed, Check, MapPin, Ruler, X } from 'lucide-react'
 
 import { Property } from '@/data/types/property'
 
+import PropertyMap from './property-map'
+
 interface PropertyDetailsProps {
   property: Property
 }
@@ -108,7 +110,7 @@ export default function PropertyDetails({ property }: PropertyDetailsProps) {
         </ul>
       </div>
       <div className="mt-6 rounded-lg bg-white p-6 shadow-md">
-        <div id="map"></div>
+        <PropertyMap property={property} />
       </div>
     </main>
   )

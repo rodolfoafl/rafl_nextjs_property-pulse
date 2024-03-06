@@ -2,7 +2,7 @@ import { Toaster } from 'sonner'
 
 import { NextAuthProvider } from '@/components/auth-provider'
 import Footer from '@/components/footer'
-import Navbar from '@/components/navbar'
+import Navbar from '@/components/navbar/navbar'
 
 export default function StoreLayout({
   children,
