@@ -1,17 +1,27 @@
-import { ArrowLeft, Bookmark, Send, Share2 } from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 import { Metadata } from 'next'
+import { headers } from 'next/headers'
 import Link from 'next/link'
+import { getServerSession } from 'next-auth'
 
+import BookmarkButton from '@/components/property/bookmark-button'
+import ContactForm from '@/components/property/contact-form'
 import PropertyDetails from '@/components/property/property-details'
 import PropertyHeaderImage from '@/components/property/property-header-image'
 import PropertyImageGallery from '@/components/property/property-image-gallery'
+import ShareButtons from '@/components/property/share-buttons'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
+import { authOptions } from '@/lib/auth'
 
 interface PropertyProps {
   params: {
     id: string
   }
+}
+
+interface GetBookmarkResponse {
+  isBookmarked: boolean
 }
 
 export async function getProperty(id: string): Promise<Property> {
@@ -21,6 +31,17 @@ export async function getProperty(id: string): Promise<Property> {
 
   const property = await response.json()
   return property
+}
+
+export async function getBookmarks(id: string): Promise<GetBookmarkResponse> {
+  const response = await api(`/bookmarks/${id}`, {
+    method: 'GET',
+    headers: headers(),
+    next: { tags: ['get-bookmark'] },
+  })
+
+  const bookmarks = await response.json()
+  return bookmarks
 }
 
 export async function generateMetadata({
@@ -37,6 +58,7 @@ export async function generateMetadata({
 export default async function PropertyPage({ params }: PropertyProps) {
   const { id } = params
   const property = await getProperty(id)
+  const session = await getServerSession(authOptions)
 
   if (!property) {
     return (
@@ -44,6 +66,16 @@ export default async function PropertyPage({ params }: PropertyProps) {
         Property Not Found
       </h1>
     )
+  }
+
+  let isBookmarked = false
+  if (session) {
+    await getBookmarks(property._id).then((data) => {
+      console.log('data::', data)
+      if (data) {
+        isBookmarked = data.isBookmarked
+      }
+    })
   }
 
   return (
@@ -67,86 +99,10 @@ export default async function PropertyPage({ params }: PropertyProps) {
             <PropertyDetails property={property} />
 
             <aside className="space-y-4">
-              <button className="flex w-full items-center justify-center rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600">
-                <Bookmark className="mr-2" size={20} />
-                Bookmark Property
-              </button>
-              <button className="flex w-full items-center justify-center rounded-full bg-orange-500 px-4 py-2 font-bold text-white hover:bg-orange-600">
-                <Share2 className="mr-2" size={20} /> Share Property
-              </button>
+              <BookmarkButton property={property} isBookmarked={isBookmarked} />
+              <ShareButtons property={property} />
 
-              <div className="rounded-lg bg-white p-6 shadow-md">
-                <h3 className="mb-6 text-xl font-bold">
-                  Contact Property Manager
-                </h3>
-                <form>
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block text-sm font-bold text-gray-700"
-                      htmlFor="name"
-                    >
-                      Name:
-                    </label>
-                    <input
-                      className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                      id="name"
-                      type="text"
-                      placeholder="Enter your name"
-                      required
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block text-sm font-bold text-gray-700"
-                      htmlFor="email"
-                    >
-                      Email:
-                    </label>
-                    <input
-                      className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email"
-                      required
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block text-sm font-bold text-gray-700"
-                      htmlFor="phone"
-                    >
-                      Phone:
-                    </label>
-                    <input
-                      className="focus:shadow-outline w-full appearance-none rounded border px-3 py-2 leading-tight text-gray-700 shadow focus:outline-none"
-                      id="phone"
-                      type="text"
-                      placeholder="Enter your phone number"
-                    />
-                  </div>
-                  <div className="mb-4">
-                    <label
-                      className="mb-2 block text-sm font-bold text-gray-700"
-                      htmlFor="message"
-                    >
-                      Message:
-                    </label>
-                    <textarea
-                      className="focus:shadow-outline h-44 w-full appearance-none rounded border px-3 py-2 text-gray-700 shadow focus:outline-none"
-                      id="message"
-                      placeholder="Enter your message"
-                    ></textarea>
-                  </div>
-                  <div>
-                    <button
-                      className="focus:shadow-outline flex w-full items-center justify-center rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 focus:outline-none"
-                      type="submit"
-                    >
-                      <Send className="mr-2" size={20} /> Send Message
-                    </button>
-                  </div>
-                </form>
-              </div>
+              <ContactForm property={property} />
             </aside>
           </div>
         </div>

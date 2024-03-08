@@ -95,7 +95,6 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } },
 ) {
-  console.log('PUT', params)
   const session = await getServerSession(authOptions)
   if (!session) {
     return new NextResponse('Unauthorized: session is required', {
@@ -124,7 +123,6 @@ export async function PUT(
 
     const { id } = params
     const existingProperty = await Property.findById(id)
-    console.log('edit', id)
 
     if (!existingProperty) {
       return new NextResponse('Property does not exist', { status: 404 })
