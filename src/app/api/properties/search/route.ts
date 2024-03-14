@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url)
     const location = searchParams.get('location') ?? ''
-    const type = searchParams.get('type')
+    const type = searchParams.get('type') ?? ''
 
     let query = {}
     if (location && location !== '') {

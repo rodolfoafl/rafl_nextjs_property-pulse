@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { Controller, useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -13,15 +13,14 @@ const searchFormSchema = z.object({
 type SearchFormSchema = z.infer<typeof searchFormSchema>
 
 export default function SearchForm() {
-  const searchParams = useSearchParams()
   const router = useRouter()
 
-  const { register, handleSubmit, control, reset } = useForm<SearchFormSchema>({
+  const { register, handleSubmit, control } = useForm<SearchFormSchema>({
     resolver: zodResolver(searchFormSchema),
   })
 
   function handleSearchForm({ location, type }: SearchFormSchema) {
-    const current = new URLSearchParams(Array.from(searchParams.entries()))
+    const current = new URLSearchParams()
 
     if (!location) {
       current.delete('location')
@@ -35,7 +34,7 @@ export default function SearchForm() {
       current.set('type', type)
     }
 
-    const search = current.toString()
+    const search = current.toString().toLowerCase()
     const query = search ? `?${search}` : ''
 
     if (query === '') {

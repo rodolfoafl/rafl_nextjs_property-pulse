@@ -1,3 +1,4 @@
+import SearchForm from '@/components/home/search-form'
 import PropertyCard from '@/components/property/property-card'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
@@ -16,18 +17,26 @@ export default async function PropertiesPage() {
   const properties = await getProperties()
 
   return (
-    <section className="bg-blue-50 px-4 py-6">
-      <div className="container-xl m-auto px-4 py-6 lg:container">
-        {!properties || properties.length === 0 ? (
-          <p>No properties found</p>
-        ) : (
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {properties.map((property) => {
-              return <PropertyCard key={property._id} property={property} />
-            })}
-          </div>
-        )}
-      </div>
-    </section>
+    <>
+      <section className="bg-blue-700 py-4">
+        <div className="mx-auto flex max-w-7xl flex-col items-start px-4 sm:px-6 lg:px-8">
+          <SearchForm />
+        </div>
+      </section>
+
+      <section className="bg-blue-50 px-4 py-6">
+        <div className="container-xl m-auto px-4 py-6 lg:container">
+          {!properties || properties.length === 0 ? (
+            <p>No properties found</p>
+          ) : (
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {properties.map((property) => {
+                return <PropertyCard key={property._id} property={property} />
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+    </>
   )
 }
