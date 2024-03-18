@@ -6,6 +6,36 @@ import { authOptions } from '@/lib/auth'
 
 import Message from '../../../data/models/Message'
 
+export async function GET(request: NextRequest) {
+  if (request.method !== 'GET') {
+    return new NextResponse('Method not allowed', { status: 405 })
+  }
+
+  const session = await getServerSession(authOptions)
+  if (!session || !session.user) {
+    return new NextResponse('Unauthorized: session is required', {
+      status: 401,
+    })
+  }
+
+  try {
+    await connectDB()
+
+    const sessionUser = session.user as DefaultUser
+    const { id: userId } = sessionUser
+
+    const messages = await Message.find({ recipient: userId })
+      .populate('sender', 'username')
+      .populate('property', 'name')
+
+    return new NextResponse(JSON.stringify(messages), { status: 200 })
+  } catch (error) {
+    console.error(error)
+
+    return new NextResponse('Something went wrong', { status: 500 })
+  }
+}
+
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions)
   if (!session || !session.user) {
