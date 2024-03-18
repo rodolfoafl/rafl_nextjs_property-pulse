@@ -71,7 +71,6 @@ export default async function PropertyPage({ params }: PropertyProps) {
   let isBookmarked = false
   if (session) {
     await getBookmarks(property._id).then((data) => {
-      console.log('data::', data)
       if (data) {
         isBookmarked = data.isBookmarked
       }

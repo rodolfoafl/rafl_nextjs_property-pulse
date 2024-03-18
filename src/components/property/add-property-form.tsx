@@ -558,7 +558,8 @@ export default function AddPropertyForm() {
       <div>
         <button
           disabled={isSubmitting}
-          className="focus:shadow-outline w-full rounded-full bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-600 focus:outline-none disabled:bg-zinc-300"
+          className="focus:shadow-outline w-full rounded-full bg-blue-500 px-4 py-2 
+          font-bold text-white hover:bg-blue-600 focus:outline-none disabled:bg-zinc-300"
           type="submit"
         >
           Add Property
