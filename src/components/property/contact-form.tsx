@@ -44,7 +44,6 @@ export default function ContactForm({ property }: ContactFormProps) {
       recipient: property.owner,
       property: property._id,
     }
-    // console.log(contactData)
 
     try {
       const res = await api('/messages', {

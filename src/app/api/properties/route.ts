@@ -107,7 +107,6 @@ export async function POST(request: NextRequest) {
       imageUploadPromises.push(result.secure_url)
 
       const uploadedImages = await Promise.all(imageUploadPromises)
-      console.log('uploadedImages', uploadedImages)
 
       propertyData.images = uploadedImages
     }

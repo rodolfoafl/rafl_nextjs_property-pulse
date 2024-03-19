@@ -45,13 +45,9 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  console.log('session::', session)
-
   try {
     const { name, email, phone, message, property, recipient } =
       await request.json()
-
-    console.log('body::', name)
 
     const sessionUser = session.user as DefaultUser
     const { id: userId } = sessionUser
@@ -74,8 +70,6 @@ export async function POST(request: NextRequest) {
       phone,
       body: message,
     })
-
-    console.log('newMessage::', newMessage)
 
     await newMessage.save()
 
