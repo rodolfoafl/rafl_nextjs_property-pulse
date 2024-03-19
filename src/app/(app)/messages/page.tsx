@@ -7,6 +7,9 @@ import { Message } from '@/data/types/message'
 async function getMessages(): Promise<Message[]> {
   const response = await api('/messages', {
     // next: { revalidate: 60 * 60 },
+    next: {
+      tags: ['get-messages'],
+    },
     cache: 'no-store',
     headers: headers(),
   })

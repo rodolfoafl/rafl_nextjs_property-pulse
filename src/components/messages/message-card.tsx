@@ -1,6 +1,7 @@
-import React from 'react'
-
 import { Message } from '@/data/types/message'
+
+import DeleteButton from './delete-button'
+import UpdateButton from './update-button'
 
 interface MessageCardProps {
   message: Message
@@ -11,6 +12,12 @@ export default function MessageCard({ message }: MessageCardProps) {
 
   return (
     <div className="relative rounded-md border border-gray-200 bg-white p-4 shadow-md">
+      {!read && (
+        <div className="absolute right-2 top-2 rounded-md bg-teal-500 px-2 py-1 text-white">
+          New
+        </div>
+      )}
+
       <h2 className="mb-4 text-xl">
         <span className="font-bold">Property Inquiry: </span>
         {property.name}
@@ -39,15 +46,8 @@ export default function MessageCard({ message }: MessageCardProps) {
           {new Date(createdAt).toLocaleDateString('pt-BR')}
         </li>
       </ul>
-      <button
-        disabled={read}
-        className="mr-3 mt-4 rounded-md bg-blue-500 px-3 py-1 text-white disabled:bg-zinc-300"
-      >
-        Mark As Read
-      </button>
-      <button className="mt-4 rounded-md bg-red-500 px-3 py-1 text-white">
-        Delete
-      </button>
+      <UpdateButton message={message} />
+      <DeleteButton message={message} />
     </div>
   )
 }
