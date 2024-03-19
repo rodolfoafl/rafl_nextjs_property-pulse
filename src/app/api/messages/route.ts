@@ -24,9 +24,20 @@ export async function GET(request: NextRequest) {
     const sessionUser = session.user as DefaultUser
     const { id: userId } = sessionUser
 
-    const messages = await Message.find({ recipient: userId })
+    const readMessages = await Message.find({ recipient: userId, read: true })
+      .sort({ createdAt: -1 })
       .populate('sender', 'username')
       .populate('property', 'name')
+
+    const unreadMessages = await Message.find({
+      recipient: userId,
+      read: false,
+    })
+      .sort({ createdAt: -1 })
+      .populate('sender', 'username')
+      .populate('property', 'name')
+
+    const messages = [...unreadMessages, ...readMessages]
 
     return new NextResponse(JSON.stringify(messages), { status: 200 })
   } catch (error) {
