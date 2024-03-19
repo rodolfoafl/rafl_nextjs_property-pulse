@@ -1,3 +1,4 @@
+import MessageNotificationCount from '../messages/message-notification-count'
 import MainMenu from './main-menu'
 import ActionsMenu from './menu'
 import ProvidersLogin from './providers-login'
@@ -10,6 +11,7 @@ export default function Navbar() {
           <MainMenu />
 
           <ActionsMenu>
+            <MessageNotificationCount />
             <ProvidersLogin />
           </ActionsMenu>
         </div>

@@ -8,7 +8,7 @@ import React from 'react'
 import UserProfileMenu from './user-profile-menu'
 
 interface ActionsMenuProps {
-  children: React.ReactNode
+  children: React.ReactNode[]
 }
 
 export default function ActionsMenu({ children }: ActionsMenuProps) {
@@ -28,9 +28,7 @@ export default function ActionsMenu({ children }: ActionsMenuProps) {
               <span className="sr-only">View notifications</span>
               <Bell />
             </button>
-            <span className="absolute right-0 top-0 inline-flex -translate-y-1/2 translate-x-1/2 transform items-center justify-center rounded-full bg-red-600 px-2 py-1 text-xs font-bold leading-none text-white">
-              2
-            </span>
+            {children[0]}
           </Link>
 
           <div className="relative ml-3">
@@ -39,7 +37,7 @@ export default function ActionsMenu({ children }: ActionsMenuProps) {
         </div>
       )}
 
-      {!isAuthenticated && children}
+      {!isAuthenticated && children[1]}
     </>
   )
 }
