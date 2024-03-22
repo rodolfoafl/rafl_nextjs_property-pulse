@@ -1,10 +1,16 @@
 import SearchForm from '@/components/home/search-form'
+import Pagination from '@/components/property/pagination'
 import PropertyCard from '@/components/property/property-card'
 import { api } from '@/data/api'
 import { Property } from '@/data/types/property'
 
-async function getProperties(): Promise<Property[]> {
-  const response = await api('/properties', {
+interface GetPropertiesResult {
+  properties: Property[]
+  total: number
+}
+
+async function getProperties(query: string): Promise<GetPropertiesResult> {
+  const response = await api(`/properties${query}`, {
     // next: { revalidate: 60 * 60 },
     cache: 'no-store',
   })
@@ -13,8 +19,21 @@ async function getProperties(): Promise<Property[]> {
   return properties
 }
 
-export default async function PropertiesPage() {
-  const properties = await getProperties()
+export default async function PropertiesPage({
+  searchParams,
+}: {
+  searchParams?: {
+    page?: string
+    pageSize?: string
+  }
+}) {
+  const paginationParams = new URLSearchParams(searchParams)
+  const pagination = paginationParams.toString().toLowerCase()
+  const query = pagination ? `?${pagination}` : ''
+
+  const data = await getProperties(query)
+  const properties = data.properties
+  const totalItems = data.total
 
   return (
     <>
@@ -36,6 +55,14 @@ export default async function PropertiesPage() {
             </div>
           )}
         </div>
+      </section>
+
+      <section>
+        <Pagination
+          page={searchParams?.page ? Number(searchParams?.page) : 1}
+          pageSize={searchParams?.pageSize ? Number(searchParams?.pageSize) : 3}
+          totalItems={totalItems}
+        />
       </section>
     </>
   )
