@@ -1,3 +1,5 @@
+import 'photoswipe/dist/photoswipe.css'
+
 import { Toaster } from 'sonner'
 
 import { NextAuthProvider } from '@/components/auth-provider'
