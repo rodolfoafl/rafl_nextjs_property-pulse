@@ -15,9 +15,24 @@ export async function GET(request: NextRequest) {
   try {
     await connectDB()
 
-    const properties = await Property.find({}).sort({ createdAt: 'desc' })
+    const searchParams = request.nextUrl.searchParams
+    const page = Number(searchParams.get('page')) || 1
+    const pageSize = Number(searchParams.get('pageSize')) || 3
+    const skip = (page - 1) * pageSize
 
-    return new NextResponse(JSON.stringify(properties), {
+    const total = await Property.countDocuments({})
+
+    const properties = await Property.find({})
+      .skip(skip)
+      .limit(pageSize)
+      .sort({ createdAt: 'desc' })
+
+    const result = {
+      total,
+      properties,
+    }
+
+    return new NextResponse(JSON.stringify(result), {
       status: 200,
     })
   } catch (error) {
